@@ -6,7 +6,7 @@ const { users } = require('./auth_users.js');
 const public_users = express.Router();
 const BASE_URL = "http://localhost:5000";
 
-// Register
+// Register new user
 public_users.post('/register', (req, res) => {
   const { username, password } = req.body;
   if (!username || !password)
@@ -18,17 +18,20 @@ public_users.post('/register', (req, res) => {
   return res.status(201).json({ message: `User '${username}' registered successfully!` });
 });
 
-// Task 2: Get all books using async/await
+// Task 1: Get all books using async/await with Axios
+// Command: curl -s http://localhost:5000/
+// Output: {"1":{"author":"Chinua Achebe","title":"Things Fall Apart","reviews":{}},"2":{"author":"Hans Christian Andersen","title":"Fairy tales","reviews":{}},"3":{"author":"Dante Alighieri","title":"The Divine Comedy","reviews":{}},"4":{"author":"Unknown","title":"The Epic Of Gilgamesh","reviews":{}},"5":{"author":"Unknown","title":"The Book Of Job","reviews":{}},"6":{"author":"Unknown","title":"One Thousand and One Nights","reviews":{}},"7":{"author":"Unknown","title":"Njal's Saga","reviews":{}},"8":{"author":"Jane Austen","title":"Pride and Prejudice","reviews":{}},"9":{"author":"Honoré de Balzac","title":"Le Père Goriot","reviews":{}},"10":{"author":"Samuel Beckett","title":"Molloy, Malone Dies, The Unnamable, the trilogy","reviews":{}}}
 public_users.get('/', async (req, res) => {
   try {
-    const allBooks = await new Promise((resolve) => resolve(books));
-    res.status(200).json(allBooks);
+    res.status(200).json(books);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
 
-// Task 3: Get book details based on ISBN using Promise callback
+// Task 2: Get book details based on ISBN using Promise
+// Command: curl -s http://localhost:5000/isbn/1
+// Output: {"author":"Chinua Achebe","title":"Things Fall Apart","reviews":{}}
 public_users.get('/isbn/:isbn', (req, res) => {
   const isbn = req.params.isbn;
   new Promise((resolve, reject) => {
@@ -43,7 +46,9 @@ public_users.get('/isbn/:isbn', (req, res) => {
     .catch(err => res.status(404).json({ message: err.message }));
 });
 
-// Task 4: Get book details based on Author using async/await with Axios
+// Task 3: Get book details based on Author using async/await with Axios
+// Command: curl -s "http://localhost:5000/author/Chinua%20Achebe"
+// Output: [{"isbn":"1","author":"Chinua Achebe","title":"Things Fall Apart","reviews":{}}]
 public_users.get('/author/:author', async (req, res) => {
   try {
     const author = req.params.author.toLowerCase();
@@ -62,7 +67,9 @@ public_users.get('/author/:author', async (req, res) => {
   }
 });
 
-// Task 5: Get book details based on Title using async/await with Axios
+// Task 4: Get book details based on Title using async/await with Axios
+// Command: curl -s "http://localhost:5000/title/Things%20Fall%20Apart"
+// Output: [{"isbn":"1","author":"Chinua Achebe","title":"Things Fall Apart","reviews":{}}]
 public_users.get('/title/:title', async (req, res) => {
   try {
     const title = req.params.title.toLowerCase();
@@ -81,7 +88,9 @@ public_users.get('/title/:title', async (req, res) => {
   }
 });
 
-// Task 6: Get book review
+// Get book review
+// Command: curl -s http://localhost:5000/review/1
+// Output: {}
 public_users.get('/review/:isbn', (req, res) => {
   const book = books[req.params.isbn];
   if (book) {
